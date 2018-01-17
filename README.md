@@ -1,6 +1,6 @@
 # Shapeit
 
-**Shapeit** (shape it) is a utility library for Node.JS or the web-browser which will take a set of coordinates as an input and will output information regards the estimated shape along with the fixed polygon. Possible shape estimations are taken from a shape atlas based on a set of threshold constants. Both shape atlas and threshold constants can be explicitly provided by the user, although preexisting values will be used as a fallback if your'e looking for a basic, yet decent functionality.
+**Shapeit** (shape it) is a utility library for Node.JS or the web-browser which will take a set of coordinates representing a roughly drawn shape as an input and will output a fixed shape along with its name. Possible shape estimations are taken from a shape atlas based on a set of threshold constants. Both shape atlas and threshold constants can be explicitly provided by the user, although preexisting values will be used as a fallback if your'e looking for a basic, yet decent functionality.
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/7648874/35002893-0db4a24a-fb26-11e7-8032-4a22a4246003.gif" />
