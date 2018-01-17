@@ -6,7 +6,7 @@
   <img src="https://user-images.githubusercontent.com/7648874/35002893-0db4a24a-fb26-11e7-8032-4a22a4246003.gif" />
 </p>
 
-### Docs
+## Docs
 
 Shapeit is a function which accepts a single parameter of a roughly drawn shape. The given shape is an array of number pairs representing 2D coordinates with X and Y values. A simple use case can be seen below:
 
@@ -58,7 +58,7 @@ assert(prettyCircle.radius, Number)
 assert(prettySquare.name, 'circle')
 ```
 
-#### shape atlas
+### shape atlas
 
 As stated in the initial summary, shape atlas and threshold constants can be provided. Let's begin with the shape atlas. The shape atlas is an atlas which contain possible shape estimations, who's geometry might come in one form or another (translated, rotated or mirrored). The default shape atlas might estimate the following shapes:
 
@@ -143,7 +143,7 @@ shapeit.modify({ atlas })
 
 This will not replace the existing atlas, but rather add more shapes that can be a potential match by the algorithm.
 
-#### threshold constants
+### threshold constants
 
 Although many times unnecessary and even dangerous, we can modify the threshold constants. Each threshold is used to detect a specific feature in the given shape so we can determine the final result and fix it accordingly. Here's a list of all thresholds followed by a description of their role:
 
