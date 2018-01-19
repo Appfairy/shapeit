@@ -80,7 +80,7 @@ class Circle {
     return this.hasRad(rad) ? rad : NaN;
   }
 
-  // Returns if circle has given vertexes
+  // Returns if circle has given vertices
   hasVertex(x, y) {
     return !Number.isNaN(this.getRad(x, y));
   }
@@ -110,7 +110,7 @@ class Circle {
     const rx = (- dy * h) / d;
     const ry = (dx * h) / d;
 
-    let interVertexes = [
+    let interVertices = [
       {
         x: x + rx,
         y: y + ry
@@ -121,13 +121,13 @@ class Circle {
       }
     ];
 
-    interVertexes = _.uniq(interVertexes, ({ x, y }) => `(${x}, ${y})`);
+    interVertices = _.uniq(interVertices, ({ x, y }) => `(${x}, ${y})`);
 
     [this, circle].forEach(function(circle) {
-      interVertexes = interVertexes.filter(({ x, y }) => circle.hasVertex(x, y));
+      interVertices = interVertices.filter(({ x, y }) => circle.hasVertex(x, y));
     });
 
-    Vertex.map(interVertexes);
+    Vertex.map(interVertices);
   }
 
   // circle - vector intersection method
@@ -144,7 +144,7 @@ class Circle {
 
     if (delta < 0) return Vertex.NaN;
 
-    let interVertexes = [
+    let interVertices = [
       {
         x: (((h * dy) + (((dy / Math.abs(dy)) || 1) * dx * Math.sqrt(delta))) /
             Math.pow(d, 2)) + this.x,
@@ -162,9 +162,9 @@ class Circle {
       return this.hasVertex(x, y) && vector.boundsHaveVertex(x, y);
     });
 
-    interVertexes = _.uniq(interVertexes, ({ x, y }) => `(${x}, ${y})`);
+    interVertices = _.uniq(interVertices, ({ x, y }) => `(${x}, ${y})`);
 
-    Vertex.map(interVertexes);
+    Vertex.map(interVertices);
   }
 
   // Moves entire circle to specified pivot

@@ -38,8 +38,8 @@ function createShapeit(config = {}) {
   });
 
   // A wrap around the result of the detectShape() function
-  function shapeit(vertexes) {
-    const result = detectShape(vertexes);
+  function shapeit(vertices) {
+    const result = detectShape(vertices);
     let shape;
 
     switch (result.name) {
@@ -59,7 +59,7 @@ function createShapeit(config = {}) {
         break;
 
       default:
-        shape = result.geometry.vertexes;
+        shape = result.geometry.vertices;
     }
 
     shape.name = result.name;
@@ -68,23 +68,23 @@ function createShapeit(config = {}) {
   }
 
   // The actual handler which detects the shape
-  function detectShape(vertexes) {
+  function detectShape(vertices) {
     // An array which is future to contain sub polygons created by intersections
     const subPolygons = [];
 
-    for (let i = 2; i < vertexes.length - 1; i++) {
-      const vertex = vertexes[i];
-      const nextVertex = vertexes[i + 1];
+    for (let i = 2; i < vertices.length - 1; i++) {
+      const vertex = vertices[i];
+      const nextVertex = vertices[i + 1];
       let vector = new Vector(vertex, nextVertex);
 
       // We will normalize the last vertex in hope to find intersection
-      if (i == vertexes.length - 2) {
+      if (i == vertices.length - 2) {
         vector = vector.normalizeLength(thresholds.normalDistance, vertex);
       }
 
       for (let j = 0; j < i - 1; j++) {
-        const candiVertex = vertexes[j];
-        const nextCandiVertex = vertexes[j + 1];
+        const candiVertex = vertices[j];
+        const nextCandiVertex = vertices[j + 1];
         let candiVector = new Vector(candiVertex, nextCandiVertex);
 
         // We will normalize the first vertex in hope to find intersection
@@ -104,20 +104,20 @@ function createShapeit(config = {}) {
 
         if (intersectionVertex === Vertex.NaN) continue;
 
-        const subVertexes = vertexes.slice(j + 1, i).concat(intersectionVertex);
-        const subPolygon = new Polygon(subVertexes);
+        const subVertices = vertices.slice(j + 1, i).concat(intersectionVertex);
+        const subPolygon = new Polygon(subVertices);
 
         // Ignore polygons with small areas
         if (subPolygon.getArea() > thresholds.minPolygonArea) {
           subPolygons.push(subPolygon);
         }
 
-        // Note that we change the vertexes reference so further calculations with sub
+        // Note that we change the vertices reference so further calculations with sub
         // polygon won't include remainder polygon
-        vertexes = vertexes
+        vertices = vertices
           .slice(0, j)
           .concat(intersectionVertex)
-          .concat(vertexes.slice(i + 1));
+          .concat(vertices.slice(i + 1));
 
         // Update outer index counter to match changes
         i = j;
@@ -127,9 +127,9 @@ function createShapeit(config = {}) {
 
     let polygon;
 
-    // If no sub polygons found just use the provided vertexes
+    // If no sub polygons found just use the provided vertices
     if (subPolygons.length == 0) {
-      polygon = new Polygon(vertexes);
+      polygon = new Polygon(vertices);
     }
     // Else, assume that the polygon with the biggest area is what we're interested in
     else {
@@ -144,7 +144,7 @@ function createShapeit(config = {}) {
 
     // If resulted polygon is not closed or we didn't find any intersections in the process
     // try to find for alternatives besides a polygon
-    if (reducedPolygon.vertexes.length < 3 || subPolygons.length == 0) {
+    if (reducedPolygon.vertices.length < 3 || subPolygons.length == 0) {
       const circle = tryCircle(polygon);
       if (circle) return circle;
 
@@ -159,21 +159,21 @@ function createShapeit(config = {}) {
       // If polygon is completely reduced, this is a single vector
       if (resultVectors.length == 0) {
         resultVectors.push(new Vector(
-          polygon.vertexes[0],
-          polygon.vertexes[polygon.vertexes.length - 1]
+          polygon.vertices[0],
+          polygon.vertices[polygon.vertices.length - 1]
         ));
       }
 
-      const resultVertexes =_.chain(resultVectors)
-        .map(vector => vector.getVertexes())
+      const resultVertices =_.chain(resultVectors)
+        .map(vector => vector.getVertices())
         .flatten()
         .value();
 
       // This is a vector, we wanna round the angle up before we return it
-      if (resultVertexes.length == 2) {
+      if (resultVertices.length == 2) {
         return {
           name: 'vector',
-          geometry: new Vector(...resultVertexes, {
+          geometry: new Vector(...resultVertices, {
             rotationProduct: mod.output.vectorRotationProduct
           }).roundAngle()
         };
@@ -182,7 +182,7 @@ function createShapeit(config = {}) {
       else {
         return {
           name: 'open polygon',
-          geometry: new Polygon(resultVertexes, { isClosed: false })
+          geometry: new Polygon(resultVertices, { closed: false })
         };
       }
     }
@@ -221,12 +221,12 @@ function createShapeit(config = {}) {
 
     // Align the element of the shape with the elements of the polygon
     for (let i = 0; i < bestScore.offset; i++) {
-      reducedPolygon.vertexes.push(reducedPolygon.vertexes.shift());
+      reducedPolygon.vertices.push(reducedPolygon.vertices.shift());
     }
 
     const shapePattern = _.clone(atlas[matchingPatternIndex]);
     const scoreThreshold = shapePattern.name == 'square' ?
-      thresholds.minSquareScore : getScoreThreshold(reducedPolygon.vertexes.length);
+      thresholds.minSquareScore : getScoreThreshold(reducedPolygon.vertices.length);
 
     // If the maximum score passes the threshold test, return its shape pattern
     if (bestScore > scoreThreshold) {
@@ -239,7 +239,7 @@ function createShapeit(config = {}) {
       geometry: reducedPolygon
     };
 
-    switch (reducedPolygon.vertexes.length) {
+    switch (reducedPolygon.vertices.length) {
       case 3: shape.name = 'triangle'; break;
       case 4: handleQuadShape(shape); break;
       case 5: shape.name = 'pentagon'; break;
@@ -252,12 +252,12 @@ function createShapeit(config = {}) {
 
   function tryCircle(polygon) {
     // Reduce polygon to see if a circle is even considered an option
-    if (polygon.reduceLOD(thresholds.circleReductionAngle).vertexes.length > 3) return;
+    if (polygon.reduceLOD(thresholds.circleReductionAngle).vertices.length > 3) return;
 
     // Explicitly creating the closure vector in case the polygon is open
     const closureVector = new Vector(
-      polygon.vertexes[0],
-      polygon.vertexes[polygon.vertexes.length - 1]
+      polygon.vertices[0],
+      polygon.vertices[polygon.vertices.length - 1]
     );
 
     // The closure distance needs to pass a threshold test in-order for the shape detector
@@ -266,7 +266,7 @@ function createShapeit(config = {}) {
 
     const center = polygon.getCenter();
 
-    const radiuses = polygon.vertexes.map((vertex) => {
+    const radiuses = polygon.vertices.map((vertex) => {
       return new Vector(center, vertex).getLength();
     });
 
@@ -356,10 +356,22 @@ function createShapeit(config = {}) {
 
 // Wrapping all provided polygon data with polygon classes
 function transformAtlas(atlas) {
-  return _.transform(atlas, (atlas, coords, name) => {
+  return _.transform(atlas, (atlas, shape, name) => {
+    let vertices, closed;
+
+    // If only an array was provided, we assume that a closed polygon was specified
+    if (shape instanceof Array) {
+      vertices = shape;
+      closed = true;
+    }
+    // Else, it might be opened
+    else {
+      { vertices, closed } = shape;
+    }
+
     atlas.push({
       name,
-      geometry: new Polygon(coords),
+      geometry: new Polygon(vertices, { closed }),
     });
   }, []);
 }

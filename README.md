@@ -1,6 +1,6 @@
 # Shapeit
 
-**Shapeit** (shape it) is a utility library for Node.JS or the web-browser which will take a set of coordinates representing a roughly drawn shape as an input and will output a fixed shape along with its name. Possible shape estimations are taken from a shape atlas based on a set of threshold constants. Both shape atlas and threshold constants can be explicitly provided by the user, although preexisting values will be used as a fallback if your'e looking for a basic, yet decent functionality.
+**Shapeit** (shape it) is a utility library for Node.JS or the web-browser which will take a set of vertices representing a roughly drawn shape as an input and will output a fixed shape along with its name. Possible shape estimations are taken from a shape atlas based on a set of threshold constants. Both shape atlas and threshold constants can be explicitly provided by the user, although preexisting values will be used as a fallback if your'e looking for a basic, yet decent functionality.
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/7648874/35002893-0db4a24a-fb26-11e7-8032-4a22a4246003.gif" />
@@ -8,7 +8,7 @@
 
 ## Docs
 
-Shapeit is a function which accepts a single parameter of a roughly drawn shape. The given shape is an array of number pairs representing 2D coordinates with X and Y values. A simple use case can be seen below:
+Shapeit is a function which accepts a single parameter of a roughly drawn shape. The given shape is an array of number pairs representing 2D vertices with X and Y values. A simple use case can be seen below:
 
 ```js
 import shapeit from 'shapeit'
@@ -31,7 +31,7 @@ assert(prettySquare, [[Number, Number]])
 assert(prettySquare.name, 'square')
 ```
 
-The result would also be a shape, but with a much reduced number of coordinates that were best aligned with one of the shapes presented in the shape atlas. The resulted shape would also have an additional `name` field representing the name of the shape. The only exception would be a circle result, where we would have an object with a `center` and `radius` fields:
+The result would also be a shape, but with a much reduced number of vertices that were best aligned with one of the shapes presented in the shape atlas. The resulted shape would also have an additional `name` field representing the name of the shape. The only exception would be a circle result, where we would have an object with a `center` and `radius` fields:
 
 ```js
 import shapeit from 'shapeit'
@@ -121,6 +121,8 @@ In addition, there are few base shapes which might be estimated regardless of th
 
 #### example
 
+By default, specified atlas shapes will be considered to be a closed polygon:
+
 ```js
 import shapeit from 'shapeit'
 
@@ -151,7 +153,39 @@ const uglyParallelogram = [
 const prettyParallelogram = shapethat(uglyParallelogram)
 
 assert(prettyParallelogram, [[Number, Number]])
+assert(prettyParallelogram.closed, true)
 assert(prettyParallelogram.name, 'parallelogram')
+```
+
+If we would like to specify an open polygon, instead of providing an object with an extra `closed` boolean field, and the vertexes will be specified under the `vertexes` field:
+
+```js
+import shapeit from 'shapeit'
+
+const shapethat = shapeit.new({
+  atlas: {
+    caret: {
+      closed: false,
+      vertices: [
+        [-1, 0],
+        [0 , 1],
+        [1 , 0],
+      ]
+    }
+  }
+})
+
+const uglyCaret = [
+  [-1.1, 0.1  ],
+  [-0.1, 0.89 ],
+  [1.2 , -0.05],
+]
+
+const prettyCaret = shapethat(uglyCaret)
+
+assert(prettyCaret, [[Number, Number]])
+assert(prettyCaret.closed, false)
+assert(prettyCaret.name, 'caret')
 ```
 
 ### threshold constants
@@ -159,8 +193,8 @@ assert(prettyParallelogram.name, 'parallelogram')
 Although many times unnecessary and even dangerous, we can modify the threshold constants. Each threshold is used to detect a specific feature in the given shape so we can determine the final result and fix it accordingly. Here's a list of all thresholds followed by a description of their role:
 
 - **circleReductionAngle** - When trying to match the given shape with a circle, all its angles whose values are greater than this one will be reduced. A higher value will result in a higher probability for a circle match. Ranges between 0 and π and defaults to 0.6.
-- **circleClosureDistance** - A given open shape might be considered as a circle only if the distance between the last coordinate and one of the vectors is shorter than this value, which means that a higher value will more likely result in a circle and not an open polygon.  Ranges between 0 and ∞ and defaults to 100.
-- **normalDistance** - A given open shape might be automatically closed and matched with one of the shapes in the atlas only if the distance between the last coordinate and one of the vectors is shorter than this value. Ranges between 0 and ∞ and defaults to 90.
+- **circleClosureDistance** - A given open shape might be considered as a circle only if the distance between the last vertex and one of the vectors is shorter than this value, which means that a higher value will more likely result in a circle and not an open polygon.  Ranges between 0 and ∞ and defaults to 100.
+- **normalDistance** - A given open shape might be automatically closed and matched with one of the shapes in the atlas only if the distance between the last vertex and one of the vectors is shorter than this value. Ranges between 0 and ∞ and defaults to 90.
 - **radiusesStdRatio** - Used to indicate how evenly distributed are all the radiuses by checking the ratio of their standard deviation with the average radius size. A lower value is more likely to match the given shape with a circle. Ranges between 0 and 1 and defaults to 0.18.
 - **minPolygonArea** - An intersection between 2 vectors will be considered one that forms a polygon only if its area is bigger than this value, which means that intersections that trap a small area won't be considered as ones that form a polygon and won't be taken into account in our calculations. Ranges between 0 and ∞ and defaults to 300.
 - **minShapeScore** - The minimum score for a match with one of the shapes in the atlas to be considered as a successful one. A higher value will result in more shapes that are likely to be matched. Ranges between 0 and 1 and defaults to 0.83.

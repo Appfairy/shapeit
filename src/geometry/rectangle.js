@@ -15,10 +15,10 @@ class Rectangle extends Polygon {
     ]);
   }
 
-  constructor(vertexes, { rotationProduct } = {}) {
-    super(vertexes, { isClosed: true });
+  constructor(vertices, { rotationProduct } = {}) {
+    super(vertices, { closed: true });
 
-    if (vertexes.length != 4) {
+    if (vertices.length != 4) {
       throw TypeError('A rectangle must have 4 corners');
     }
 
@@ -49,7 +49,7 @@ class Rectangle extends Polygon {
     const center = this.getCenter();
     const rotation = this.getRotation();
     const realRect = this.rotate(-rotation);
-    const r = new Vector(center, this.vertexes[0]).getLength();
+    const r = new Vector(center, this.vertices[0]).getLength();
     const circle = new Circle(center, r);
     const x = realRect.getMinX();
     const y = realRect.getMinY();

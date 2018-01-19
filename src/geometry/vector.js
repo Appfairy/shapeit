@@ -44,7 +44,7 @@ class Vector {
     this.rotationProduct = rotationProduct;
   }
 
-  // Gets the length of the vector based on its vertexes
+  // Gets the length of the vector based on its vertices
   getLength() {
     return Math.sqrt((this.x1 - this.x2) ** 2 + (this.y1 - this.y2) ** 2);
   }
@@ -72,7 +72,7 @@ class Vector {
     return Math.atan2(Math.sin(a2 - a1), Math.cos(a2 - a1));
   }
 
-  getVertexes() {
+  getVertices() {
     return [this._vertex1, this._vertex2];
   }
 
@@ -146,13 +146,13 @@ class Vector {
     if (length < 0) return this;
 
     // Determine the counter pivot, the vertex which does not equal to the current pivot
-    const vertexes = [this.vertex1, this.vertex2];
-    const counterIndex = vertexes.findIndex(vertex => !_.isEqual(vertex, pivot));
+    const vertices = [this.vertex1, this.vertex2];
+    const counterIndex = vertices.findIndex(vertex => !_.isEqual(vertex, pivot));
 
     if (counterIndex == -1) return this;
 
     const index = (counterIndex + 1) % 2
-    const counterPivot = vertexes[counterIndex];
+    const counterPivot = vertices[counterIndex];
 
     // Determine whether we should extend the vector backwards or forwards
     // Note that the coordinate system in canvas is actually mirrored, therefore we need
@@ -167,12 +167,12 @@ class Vector {
       y: pivot.y + yFactor * length * Math.abs(Math.sin(angle))
     };
 
-    // Note that the order of the vertexes might be critical, depends on the calculation
-    const normalizedVertexes = [];
-    normalizedVertexes[index] = pivot;
-    normalizedVertexes[counterIndex] = vertex;
+    // Note that the order of the vertices might be critical, depends on the calculation
+    const normalizedVertices = [];
+    normalizedVertices[index] = pivot;
+    normalizedVertices[counterIndex] = vertex;
 
-    return new Vector(...normalizedVertexes);
+    return new Vector(...normalizedVertices);
   }
 
   // Finds the angles between the two vectors based on the law of cosines
@@ -182,7 +182,7 @@ class Vector {
     const diff = _.chain([this, vector])
       .map(vector => _.pick(vector, 'vertex1', 'vertex2'))
       .map(_.values)
-      .thru(vertexes => _.xorWith(...vertexes, _.isEqual))
+      .thru(vertices => _.xorWith(...vertices, _.isEqual))
       .value();
 
     // If vectors don't share a vertex we can't invoke the method
@@ -205,7 +205,7 @@ class Vector {
     const radiansX = Math.cos(radians);
     const radiansY = Math.sin(radians);
 
-    const vertexes = [this.vertex1, this.vertex2]
+    const vertices = [this.vertex1, this.vertex2]
       .map((vertex) => ({
         x: vertex.x - pivot.x,
         y: vertex.y - pivot.y
@@ -219,7 +219,7 @@ class Vector {
         y: vertex.y + pivot.y
       }));
 
-    return new this.constructor(...vertexes);
+    return new this.constructor(...vertices);
   }
 
   // Rounds angle based on the rotation product constant.

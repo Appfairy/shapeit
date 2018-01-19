@@ -6,8 +6,8 @@ class Vertex {
   }
 
   // Ensures that plain objects are actually instances of the Vertex class
-  static map(vertexes) {
-    return vertexes.map(vertex => new Vertex(vertex));
+  static map(vertices) {
+    return vertices.map(vertex => new Vertex(vertex));
   }
 
   constructor(x, y) {
