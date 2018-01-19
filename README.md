@@ -58,6 +58,36 @@ assert(prettyCircle.radius, Number)
 assert(prettySquare.name, 'circle')
 ```
 
+A new Shapeit instance can be created with custom configuration using the `new()` method:
+
+```js
+import shapeit from 'shapeit'
+
+const shapethat = shapeit.new({
+  atlas: {},
+  output: {},
+  thresholds: {},
+})
+```
+
+In addition, an existing Shapeit instance configuration can be modified using the `modify()` method:
+
+```js
+import shapeit from 'shapeit'
+
+modify.new({
+  atlas: {},
+  output: {},
+  thresholds: {},
+})
+```
+
+More information regards the configuration options used in the examples above can be found further in the docs section. In addition, here's a list with quick references for each configuration field documentation section:
+
+- [shape atlas](#shape-atlas)
+- [threshold constants](#threshold-contants)
+- [output options](#output-options)
+
 ### shape atlas
 
 As stated in the initial summary, shape atlas and threshold constants can be provided. Let's begin with the shape atlas. The shape atlas is an atlas which contain possible shape estimations, who's geometry might come in one form or another (translated, rotated or mirrored). The default shape atlas might estimate the following shapes:
@@ -73,7 +103,7 @@ As stated in the initial summary, shape atlas and threshold constants can be pro
 - **star**
 - **trapezoid**
 
-> Default atlas can be viewed in [this file]()
+> Default atlas can be viewed in [this file](src/defaults/atlas).
 
 In addition, there are few base shapes which might be estimated regardless of the atlas that we provide:
 
@@ -89,22 +119,22 @@ In addition, there are few base shapes which might be estimated regardless of th
 - **vector**
 - **vector**
 
-Here's an example of how we can create a new instance of Shapeit with an explicitly defined shape atlas:
+#### example
 
 ```js
 import shapeit from 'shapeit'
 
-const atlas = {
-  parallelogram: [
-    [1, 0],
-    [5, 0],
-    [4, 2],
-    [0, 2],
-    [1, 0],
-  ]
-}
-
-const shapethat = shapeit.new({ atlas })
+const shapethat = shapeit.new({
+  atlas: {
+    parallelogram: [
+      [1, 0],
+      [5, 0],
+      [4, 2],
+      [0, 2],
+      [1, 0],
+    ]
+  }
+})
 
 const uglyParallelogram = [
   [0.9 , 0.1 ],
@@ -124,65 +154,56 @@ assert(prettyParallelogram, [[Number, Number]])
 assert(prettyParallelogram.name, 'parallelogram')
 ```
 
-We can also modify the configuration of an existing Shapeit instance by doing the following:
-
-```js
-import shapeit from 'shapeit'
-
-const atlas = {
-  parallelogram: [
-    [1, 0],
-    [5, 0],
-    [4, 2],
-    [0, 2],
-    [1, 0],
-  ]
-}
-
-shapeit.modify({ atlas })
-```
-
-This will not replace the existing atlas, but rather add more shapes that can be a potential match by the algorithm.
-
 ### threshold constants
 
 Although many times unnecessary and even dangerous, we can modify the threshold constants. Each threshold is used to detect a specific feature in the given shape so we can determine the final result and fix it accordingly. Here's a list of all thresholds followed by a description of their role:
 
-- **circleReductionAngle** - When trying to match the given shape with a circle, all its angles whose values are greater than this one will be reduced. A higher value will result in a higher probability for a circle match. Ranges between 0 to π and defaults to 0.6.
-- **circleClosureDistance** - A given open shape might be considered as a circle only if the distance between the last coordinate and one of the vectors is shorter than this value, which means that a higher value will more likely result in a circle and not an open polygon.  Ranges between 0 to ∞ and defaults to 100.
-- **normalDistance** - A given open shape might be automatically closed and matched with one of the shapes in the atlas only if the distance between the last coordinate and one of the vectors is shorter than this value. Ranges between 0 to ∞ and defaults to 90.
-- **radiusesStdRatio** - Used to indicate how evenly distributed are all the radiuses by checking the ratio of their standard deviation with the average radius size. A lower value is more likely to match the given shape with a circle. Ranges between 0 to 1 and defaults to 0.18.
-- **minPolygonArea** - An intersection between 2 vectors will be considered one that forms a polygon only if its area is bigger than this value, which means that intersections that trap a small area won't be considered as ones that form a polygon and won't be taken into account in our calculations. Ranges between 0 to ∞ and defaults to 300.
-- **minShapeScore** - The minimum score for a match with one of the shapes in the atlas to be considered as a successful one. A higher value will result in more shapes that are likely to be matched. Ranges between 0 to 1 and defaults to 0.83.
-- **minSquareScore** - The minimum score that will gratify a square match, which means that a lower score will more likely match a given shape with a square. Ranges between 0 to 1 and defaults to 0.85.
-- **vectorsReductionAngle** - 2 vectors will be reduced into a single vector if the angle between them is lower than this value, otherwise they will be considered as 2 vectors which form a corner. A higher value will reduce more corners and will result in straight lines. Ranges between 0 to π and defaults to 0.3.
+- **circleReductionAngle** - When trying to match the given shape with a circle, all its angles whose values are greater than this one will be reduced. A higher value will result in a higher probability for a circle match. Ranges between 0 and π and defaults to 0.6.
+- **circleClosureDistance** - A given open shape might be considered as a circle only if the distance between the last coordinate and one of the vectors is shorter than this value, which means that a higher value will more likely result in a circle and not an open polygon.  Ranges between 0 and ∞ and defaults to 100.
+- **normalDistance** - A given open shape might be automatically closed and matched with one of the shapes in the atlas only if the distance between the last coordinate and one of the vectors is shorter than this value. Ranges between 0 and ∞ and defaults to 90.
+- **radiusesStdRatio** - Used to indicate how evenly distributed are all the radiuses by checking the ratio of their standard deviation with the average radius size. A lower value is more likely to match the given shape with a circle. Ranges between 0 and 1 and defaults to 0.18.
+- **minPolygonArea** - An intersection between 2 vectors will be considered one that forms a polygon only if its area is bigger than this value, which means that intersections that trap a small area won't be considered as ones that form a polygon and won't be taken into account in our calculations. Ranges between 0 and ∞ and defaults to 300.
+- **minShapeScore** - The minimum score for a match with one of the shapes in the atlas to be considered as a successful one. A higher value will result in more shapes that are likely to be matched. Ranges between 0 and 1 and defaults to 0.83.
+- **minSquareScore** - The minimum score that will gratify a square match, which means that a lower score will more likely match a given shape with a square. Ranges between 0 and 1 and defaults to 0.85.
+- **vectorsReductionAngle** - 2 vectors will be reduced into a single vector if the angle between them is lower than this value, otherwise they will be considered as 2 vectors which form a corner. A higher value will reduce more corners and will result in straight lines. Ranges between 0 and π and defaults to 0.3.
 
-> Default thresholds can be viewed in [this file]()
+> Default thresholds can be viewed in [this file](src/defaults/thresholds).
 
-To create a new instance of Shapeit with custom thresholds we can do the following:
+#### example
 
 ```js
 import shapeit from 'shapeit'
 
-const thresholds = {
-  circleReductionAngle: 0.7,
-  circleClosureDistance: 120,
-}
-
-const shapethat = shapeit.new({ thresholds })
+// Circles are more likely to be detected with these thresholds
+const shapethat = shapeit.new({
+  thresholds: {
+    circleReductionAngle: 0.7,
+    circleClosureDistance: 120,
+  }
+})
 ```
 
-Alternatively, we can also keep a set of threshold constants but only modify few specific ones:
+### output options
+
+The output shape can be configured upfront by specifying its output options. The output options are optional and may contain the following fields:
+
+- **rectRotationProduct** - If the output shape is a rectangle, its angle will be rounded to the nearest multiplication of this value. Ranges between 0 and 2π and defaults to π / 8.
+- **vectorRotationProduct** - If the output shape is a vector, its angle will be rounded to the nearest multiplication of this value. Ranges between 0 and 2π and defaults to π / 16.
+
+> Default output options can be viewed in [this file](src/defaults/output).
+
+#### example
 
 ```js
 import shapeit from 'shapeit'
 
-const thresholds = {
-  circleReductionAngle: 0.7,
-  circleClosureDistance: 120,
-}
-
-shapeit.modify({ thresholds })
+// Will result in vertical or horizontal rectangles and vectors only
+const shapethat = shapeit.new({
+  output: {
+    rectRotationProduct: Math.PI / 2,
+    vectorRotationProduct: Math.PI / 2,
+  }
+})
 ```
 
 ## Download

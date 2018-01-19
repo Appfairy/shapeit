@@ -25,15 +25,17 @@ function createShapeit(config = {}) {
   const atlas = transformAtlas(config.atlas);
 
   // Square is a very basic and important shape which will always be added by default
-  atlas.square = {
+  atlas.push({
     name: 'square',
     geometry: new Rectangle([
       { x: 0, y: 0 },
       { x: 1, y: 0 },
       { x: 1, y: 1 },
       { x: 1, y: 0 },
-    ]),
-  };
+    ], {
+      rotationProduct: mod.output.rectRotationProduct
+    }),
+  });
 
   // A wrap around the result of the detectShape() function
   function shapeit(vertexes) {
@@ -171,7 +173,9 @@ function createShapeit(config = {}) {
       if (resultVertexes.length == 2) {
         return {
           name: 'vector',
-          geometry: new Vector(...resultVertexes).roundAngle()
+          geometry: new Vector(...resultVertexes, {
+            rotationProduct: mod.output.vectorRotationProduct
+          }).roundAngle()
         };
       }
       // Otherwise this us probably a vectors set
@@ -333,9 +337,15 @@ function createShapeit(config = {}) {
         ...mod,
       };
 
-      Object.assign(atlas, transformAtlas(mod.atlas));
+      atlas.push(...transformAtlas(mod.atlas));
       Object.assign(output, mod.output);
       Object.assign(thresholds, mod.thresholds);
+
+      // Rotation segment for stored square shape should be updated
+      if (mod.output.rectRotationProduct != null) {
+        const square = atlas.find(({ name }) => name == 'square');
+        square.rotationProduct = mod.output.rectRotationProduct;
+      }
 
       return shapeit;
     },
@@ -346,10 +356,12 @@ function createShapeit(config = {}) {
 
 // Wrapping all provided polygon data with polygon classes
 function transformAtlas(atlas) {
-  return _.transform(atlas, (atlas, coords, name) => ({
-    name,
-    geometry: new Polygon(coords),
-  }));
+  return _.transform(atlas, (atlas, coords, name) => {
+    atlas.push({
+      name,
+      geometry: new Polygon(coords),
+    });
+  }, []);
 }
 
-export default detectShape;
+export default createShapeit;

@@ -1,6 +1,6 @@
 const output = {
-  vectorRotationSegment: Math.PI / 16,
-  rectRotationSegment: Math.PI / 8,
+  vectorRotationProduct: Math.PI / 16,
+  rectRotationProduct: Math.PI / 8,
 };
 
 export default output;

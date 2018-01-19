@@ -2,8 +2,6 @@ import * as _ from 'lodash';
 import * as utils from '../utils';
 import Vertex from './vertex';
 
-const ROTATION_SEGMENT = Math.PI / 16;
-
 // Will be loaded at the bottom to prevent circular dependency
 let Circle;
 
@@ -40,9 +38,10 @@ class Vector {
     return this.vertex2.y;
   }
 
-  constructor(vertex1, vertex2) {
+  constructor(vertex1, vertex2, { rotationProduct } = {}) {
     this.vertex1 = vertex1;
     this.vertex2 = vertex2;
+    this.rotationProduct = rotationProduct;
   }
 
   // Gets the length of the vector based on its vertexes
@@ -223,14 +222,17 @@ class Vector {
     return new this.constructor(...vertexes);
   }
 
-  // Rounds angle based on the rotation segment constant
+  // Rounds angle based on the rotation product constant.
+  // If rotation product is not defined, will return self
   roundAngle() {
+    if (!this.rotationProduct) return this;
+
     const rotation = this.getAngle();
-    const mod = utils.fixedMod(rotation, ROTATION_SEGMENT);
+    const mod = utils.fixedMod(rotation, this.rotationProduct);
     const sign = (Math.abs(mod) / mod) || 1;
 
-    if (mod > ROTATION_SEGMENT / 2) {
-      return this.rotate(-sign * (mod - ROTATION_SEGMENT));
+    if (mod > this.rotationProduct / 2) {
+      return this.rotate(-sign * (mod - this.rotationProduct));
     }
     else {
       return this.rotate(-sign * mod);

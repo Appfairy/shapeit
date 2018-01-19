@@ -4,8 +4,6 @@ import Circle from './circle';
 import Polygon from './polygon';
 import Vector from './vector';
 
-const ROTATION_SEGMENT = Math.PI / 8;
-
 class Rectangle extends Polygon {
   // Creates a new rectangle instance given position and dimensions
   static fromScalars(x, y, w, h) {
@@ -17,12 +15,14 @@ class Rectangle extends Polygon {
     ]);
   }
 
-  constructor(vertexes) {
+  constructor(vertexes, { rotationProduct } = {}) {
     super(vertexes, { isClosed: true });
 
     if (vertexes.length != 4) {
       throw TypeError('A rectangle must have 4 corners');
     }
+
+    this.rotationProduct = rotationProduct;
 
     const cosines = this.getCosines();
 
@@ -58,19 +58,22 @@ class Rectangle extends Polygon {
     return circle.getVertex(rad + rotation);
   }
 
-  // Rectangles' angles should be rounded, since this is most likely what the user wants
+  // Rectangles' angles should be rounded, since this is most likely what the user wants.
+  // If rotation product is not defined, will return self
   fitWith(polygon, useMirroring) {
     let fitPolygon = super.fitWith(polygon, useMirroring);
 
-    const rotation = fitPolygon.getRotation();
-    const mod = fixedMod(rotation, ROTATION_SEGMENT);
-    const sign = (Math.abs(mod) / mod) || 1;
+    if (this.rotationProduct) {
+      const rotation = fitPolygon.getRotation();
+      const mod = fixedMod(rotation, this.rotationProduct);
+      const sign = (Math.abs(mod) / mod) || 1;
 
-    if (mod > ROTATION_SEGMENT / 2) {
-      fitPolygon = fitPolygon.rotate(-sign * (mod - ROTATION_SEGMENT));
-    }
-    else {
-      fitPolygon = fitPolygon.rotate(-sign * mod);
+      if (mod > this.rotationProduct / 2) {
+        fitPolygon = fitPolygon.rotate(-sign * (mod - this.rotationProduct));
+      }
+      else {
+        fitPolygon = fitPolygon.rotate(-sign * mod);
+      }
     }
 
     return fitPolygon;
