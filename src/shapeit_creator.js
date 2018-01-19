@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import * as utils from '../utils';
+import * as utils from './utils';
 
 import {
   output as defaultOutput,
@@ -12,10 +12,10 @@ import {
   Rectangle,
   Vector,
   Vertex
-} from '../../geometry';
+} from './geometry';
 
 function createShapeit(config = {}) {
-  const { thresholds } = config = _.mergeDeep({
+  const { thresholds, output } = config = _.mergeDeep({
     atlas: {},
     output: defaultOutput,
     thresholds: defaultThresholds,
@@ -33,7 +33,7 @@ function createShapeit(config = {}) {
       { x: 1, y: 1 },
       { x: 1, y: 0 },
     ], {
-      rotationProduct: mod.output.rectRotationProduct
+      rotationProduct: output.rectRotationProduct
     }),
   });
 
@@ -43,7 +43,7 @@ function createShapeit(config = {}) {
     let shape;
 
     switch (result.name) {
-      case 'circle':
+      case 'circle': {
         const center = result.geometry.getCenter();
 
         shape = {
@@ -52,14 +52,15 @@ function createShapeit(config = {}) {
         };
 
         break;
-
-      case 'vector':
+      }
+      case 'vector': {
         shape = [result.geometry.vertex1, result.geometry.vertex2];
 
         break;
-
-      default:
+      }
+      default: {
         shape = result.geometry.vertices;
+      }
     }
 
     shape.name = result.name;
@@ -174,7 +175,7 @@ function createShapeit(config = {}) {
         return {
           name: 'vector',
           geometry: new Vector(...resultVertices, {
-            rotationProduct: mod.output.vectorRotationProduct
+            rotationProduct: output.vectorRotationProduct
           }).roundAngle()
         };
       }
@@ -329,6 +330,10 @@ function createShapeit(config = {}) {
       return { ...thresholds };
     },
 
+    getOutputOptions() {
+      return { ...output };
+    },
+
     modify(mod = {}) {
       mod = {
         atlas: {},
@@ -366,7 +371,8 @@ function transformAtlas(atlas) {
     }
     // Else, it might be opened
     else {
-      { vertices, closed } = shape;
+      vertices = shape.vertices;
+      closed = shape.closed;
     }
 
     atlas.push({

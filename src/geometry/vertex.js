@@ -12,11 +12,15 @@ class Vertex {
 
   constructor(x, y) {
     if (arguments.length == 1) {
-      if (arguments[0] instanceof Array) {
-        [x, y] = arguments[0];
+      const coord = arguments[0];
+
+      if (coord instanceof Array) {
+        x = coord[0];
+        y = coord[1];
       }
-      else if (arguments[0] instanceof Object) {
-        { x, y } = arguments[0];
+      else if (coord instanceof Object) {
+        x = coord.x;
+        y = coord.y;
       }
     }
 

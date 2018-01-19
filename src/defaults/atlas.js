@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import { Circle } from '../geometry';
 
-const atlas = [
+const atlas = {
   'equilateral triangle': generateEquilateral(3),
   'equilateral pentagon': generateEquilateral(5),
   'equilateral hexagon': generateEquilateral(6),

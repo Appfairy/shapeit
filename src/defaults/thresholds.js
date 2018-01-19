@@ -9,4 +9,4 @@ const thresholds = {
   vectorsReductionAngle: 0.3,
 };
 
-export default threholds;
+export default thresholds;
