@@ -22,12 +22,12 @@ class Polygon {
 
   set vertices(vertices) {
     // Getting rid of multiple vertices in a row. Drawn shapes can always be messy ;-)
-    return this._vertices = vertices.map(vertices).filter((currVertex, i) => {
+    return this._vertices = Vertex.map(vertices).filter((currVertex, i) => {
       const prevIndex = utils.fixedMod(i - 1, vertices.length);
       const prevVertex = vertices[prevIndex];
 
-      return utils.isSimilar(currVertex.x, currVertex.x) &&
-             utils.isSimilar(prevVertex.y, prevVertex.y);
+      return !utils.isSimilar(currVertex.x, currVertex.x) ||
+             !utils.isSimilar(prevVertex.y, prevVertex.y);
     });
   }
 

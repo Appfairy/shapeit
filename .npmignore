@@ -1,6 +1,6 @@
 .babelrc
 .eslintrc
 .gitignore
-src
-test
+/src
+/test_app
 webpack_config

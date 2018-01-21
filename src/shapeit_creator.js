@@ -15,7 +15,7 @@ import {
 } from './geometry';
 
 function createShapeit(config = {}) {
-  const { thresholds, output } = config = _.mergeDeep({
+  const { thresholds, output } = config = _.merge({
     atlas: {},
     output: defaultOutput,
     thresholds: defaultThresholds,
@@ -31,7 +31,7 @@ function createShapeit(config = {}) {
       { x: 0, y: 0 },
       { x: 1, y: 0 },
       { x: 1, y: 1 },
-      { x: 1, y: 0 },
+      { x: 0, y: 1 },
     ], {
       rotationProduct: output.rectRotationProduct
     }),
@@ -54,7 +54,12 @@ function createShapeit(config = {}) {
         break;
       }
       case 'vector': {
-        shape = [result.geometry.vertex1, result.geometry.vertex2];
+        const { vertex1, vertex2 }=  result.geometry;
+
+        shape = [
+          [vertex1.x, vertex1.y],
+          [vertex2.x, vertex2.y],
+        ];
 
         break;
       }
@@ -65,7 +70,7 @@ function createShapeit(config = {}) {
 
     shape.name = result.name;
 
-    return result;
+    return shape;
   }
 
   // The actual handler which detects the shape
@@ -252,6 +257,8 @@ function createShapeit(config = {}) {
   }
 
   function tryCircle(polygon) {
+    // Contains a single straight vector
+    if (polygon.vertices.length < 3) return;
     // Reduce polygon to see if a circle is even considered an option
     if (polygon.reduceLOD(thresholds.circleReductionAngle).vertices.length > 3) return;
 
