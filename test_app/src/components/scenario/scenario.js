@@ -8,7 +8,8 @@ const LINE_DASH = 5;
 class Scenario extends React.Component {
   componentDidMount() {
     const { data } = this.props;
-    const out = shapeit(data);
+    const input = this.transform(data);
+    const out = shapeit(input);
 
     this.canvas.width = 100;
     this.canvas.height = 100;
@@ -21,7 +22,7 @@ class Scenario extends React.Component {
     ctx.strokeStyle = 'blue';
 
     // Input
-    this.draw(data);
+    this.draw(input);
 
     ctx.strokeStyle = 'red';
     ctx.lineDashOffset = LINE_DASH / 2;
@@ -44,7 +45,18 @@ class Scenario extends React.Component {
     );
   }
 
-  draw(data, color) {
+  transform(data) {
+    return data.map((vertex) => {
+      if (vertex instanceof Array) {
+        return vertex;
+      }
+      else {
+        return [vertex.x, vertex.y];
+      }
+    });
+  }
+
+  draw(data) {
     const ctx = this.canvas.getContext('2d');
 
     ctx.beginPath();

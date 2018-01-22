@@ -64,7 +64,9 @@ function createShapeit(config = {}) {
         break;
       }
       default: {
-        shape = result.geometry.vertices;
+        shape = result.geometry.vertices.map((vertex) => [
+          vertex.x, vertex.y
+        ]);
       }
     }
 

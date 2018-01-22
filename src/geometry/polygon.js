@@ -26,8 +26,8 @@ class Polygon {
       const prevIndex = utils.fixedMod(i - 1, vertices.length);
       const prevVertex = vertices[prevIndex];
 
-      return !utils.isSimilar(currVertex.x, currVertex.x) ||
-             !utils.isSimilar(prevVertex.y, prevVertex.y);
+      return !utils.isSimilar(currVertex.x, prevVertex.x) ||
+             !utils.isSimilar(currVertex.y, prevVertex.y);
     });
   }
 
