@@ -48,13 +48,13 @@ function createShapeit(config = {}) {
 
         shape = {
           center: [center.x, center.y],
-          radius: result.geometry.getRadius(),
+          radius: result.geometry.r,
         };
 
         break;
       }
       case 'vector': {
-        const { vertex1, vertex2 }=  result.geometry;
+        const { vertex1, vertex2 } = result.geometry;
 
         shape = [
           [vertex1.x, vertex1.y],

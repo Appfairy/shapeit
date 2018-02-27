@@ -2,7 +2,7 @@ import './App.css';
 
 import React from 'react';
 import { Description } from './components';
-import data from './test_data.js';
+import data from './data';
 
 class App extends React.Component {
   render() {

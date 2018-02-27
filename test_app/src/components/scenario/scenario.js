@@ -11,8 +11,8 @@ class Scenario extends React.Component {
     const input = this.transform(data);
     const out = shapeit(input);
 
-    this.canvas.width = 100;
-    this.canvas.height = 100;
+    this.canvas.width = 300;
+    this.canvas.height = 300;
 
     const ctx = this.canvas.getContext('2d');
 
@@ -61,11 +61,16 @@ class Scenario extends React.Component {
 
     ctx.beginPath();
 
-    ctx.moveTo(...data[0]);
+    if (data.center) {
+      ctx.arc(...data.center, data.radius, 0, 2 * Math.PI);
+    }
+    else {
+      ctx.moveTo(...data[0]);
 
-    data.slice(1).forEach((vertex) => {
-      ctx.lineTo(...vertex);
-    });
+      data.slice(1).forEach((vertex) => {
+        ctx.lineTo(...vertex);
+      });
+    }
 
     ctx.stroke();
   }
